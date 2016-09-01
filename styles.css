@@ -1,0 +1,14 @@
+#searchBox {
+	float: right;
+	width: 100px;
+    height: 100px;
+    border: 1px solid blue;
+    box-sizing: border-box;
+}
+#searchLocation {
+	float: left;
+	width: 100px;
+    height: 100px;
+    border: 1px solid blue;
+    box-sizing: border-box;
+}

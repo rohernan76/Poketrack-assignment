@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>PokéTrack</title>
+	<script
+		src="https://code.jquery.com/jquery-3.1.0.min.js"
+		integrity="sha256-cCueBR6CsyA4/9szpPfrX3s49M9vUU5BgtiJj06wt/s="
+		crossorigin="anonymous"
+	></script>
+	
+</head>
+<body>
+	<label for="locStr">Location: <input type="text" id="locStr"></label>
+	<label for="pokemonId">Pokemon: <input type="text" id="pokemonId"></label>
+	<input type="button" id="submit" value="Send Loc">
+	<input type="button" id="logOut" value="Log Out">
+	<div id="output"></div>
+
+		<!-- Search Engine -->
+	<div>
+		<label for="locStr">
+			<button onClick="searchLocation ()" class="searchLocation">Search By Location</button>
+				<input type="text" id="locName">
+		</label>
+		<label for="pokemonId">
+			<button onClick="searchPokemon ()" class="pokeSearch">Search By Pokemon</button>
+			<input type="text" id="pokemonName"></label>
+		<div id="searchLocation"></div>
+		<div id="searchBox"></div>
+		<button id="logout">Logout</button>
+	</div>
+	
+</body>
+
+<script>
+
+	function showAllPokemon() {
+		console.log("showing Pokemon");
+		$.get(
+			'/api/sighting', // GET the route /api/sighting
+			function(data){ //handle the data it returns
+				console.log(data);
+				$('#output').html(""); //reset our output element
+				for (var i = 0; i < data.length; i++) { //for each datum
+					$('#output').append( //append a new paragraph to #output
+						'<p>' + data[i].pokemonId + " " + data[i].locStr + '</p>'
+					);
+				}
+			},
+			'json' //interpret the incoming data as a JSON object (JSON.parse)
+		);
+	}
+
+	function sendPokemon() {
+		console.log("sending Pokemon");
+		$.post(
+			'/api/sighting', // route
+			{
+				locStr: $('#locStr').val(),
+				pokemonId: $('#pokemonId').val()
+			}, function(data){
+				if(data === "success"){
+				//req.body object
+				showAllPokemon();
+				};
+			}
+		);
+	}
+	//how to search by pokemon name
+	function searchPokemon(){
+		console.log("getting Pokemon");
+		var pokeName = $('#pokemonName')[0].value;
+		console.log(pokeName);
+		$.get(
+			'/api/sighting/id/' + pokeName,
+			function(data){
+				$('#searchBox').html(""); //reset our output element
+				for (var i = 0; i < data.length; i++) { //for each datum
+					$('#searchBox').append( //append a new paragraph to #output
+						'<p>' + data[i].locStr + " " + '</p>'
+					);
+				}
+			},
+			'json' //interpret the incoming data as a JSON object (JSON.parse)
+		);
+	};
+	// }
+	// //how to search by location
+	function searchLocation(){
+		console.log("getting location");
+		var cityName = $('#locName')[0].value;
+		console.log(pokemonName);
+		$.get(
+			'/api/sighting/city/' + cityName,
+			function(data){
+				$('#searchLocation').html(""); //reset our output element
+				for (var i = 0; i < data.length; i++) { //for each datum
+					$('#searchLocation').append( //append a new paragraph to #output
+						'<p>' + data[i].pokemonId + " " + '</p>'
+					);
+				}
+			},
+			'json' //interpret the incoming data as a JSON object (JSON.parse)
+		);
+	};
+
+	function tryToLogout() {
+		$.get('/logout', 
+			function(data) {
+				if (data === "success"){
+					document.location = "/login";
+				} else {
+					$('#error').html("Sorry, no dice!");
+				}
+			});
+		}
+
+	$(document).ready(function() {
+		showAllPokemon();
+		$('#submit').click(sendPokemon);
+		$('#logout').click(tryToLogout);
+	});
+
+
+	</script>
+</html>
